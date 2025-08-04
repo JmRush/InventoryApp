@@ -20,6 +20,7 @@ async function getMangaCategories(mangaSlug) {
     throw new Error(`${res.stauts}: ${res.text()}`);
   }
 }
+//a
 async function fillFormData(title, desc, imageSrc, slug) {
   //make request to kitsu using ID
   let itemData = await getMangaCategories(slug);
