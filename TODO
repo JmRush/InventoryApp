@@ -1,14 +1,17 @@
 NEED
--CSS responsive design for mobile (probably not for tablets)
 -verify error handling is done in a somewhat useful manner, (DO NOT crash the entire server for a single upload error)
 -Verify/Sanitized text inputs
 -Access control - destruction and creation should either be A) limited to certain users or B) Well controlled and sanitized, decide and go for it
--Improve design as I go, I would have liked to focus on this more, but was a bit overwhelmed with learning a bunch of new information
 
--Homepage design seems acceptable, should add responsiveness
--Update page design seems off, also needs responsiveness
--Create page seems functional, needs responsiveness
--Categories page seems not useful, maybe add a sidebar on main page with category filters? and add an authorization section for nav bar
+Sanitization and safety points:
+Posts,Forms, file upload
+site endpoint safety
+CSS/
+
+CSS CHANGES:
+-Responsiveness needed
+-Categories page redone OR moved to sidebar
+-update page with form on it needs revamped
 
 Completed
 

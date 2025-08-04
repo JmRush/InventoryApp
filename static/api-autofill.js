@@ -78,7 +78,10 @@ async function autoFillItem() {
     recContainer.setAttribute("id", "rec-container");
     recContainer.classList.add("rec-container");
     let recommendations = searchData.data.slice(0, 3);
-    if (recommendations[0].attributes.canonicalTitle == " ") {
+    if (
+      recommendations[0].attributes.canonicalTitle == "" ||
+      recommendations[0].attributes.canonicalTitle == " "
+    ) {
       removeSearchRecs();
       return;
     }
