@@ -2,69 +2,96 @@ html {
   width: 100%;
   height: 100%;
 }
+
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: clamp(0.875rem, .5vw, .5rem) "Lucida Grande", Helvetica, Arial, sans-serif;
   margin: 0;
   color: darkslategrey;
   height: 100%;
   overflow-x: hidden;
 }
-.item-description-wrapper {
-  color: darkslategrey;
-  display: flex;
-  max-width: 100%;
-  min-height: 80%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.item-description {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-}
+
+
 .delete-item-button button {
   background-color: darkslategrey;
   color: whitesmoke;
   border-radius: 1rem;
   padding: 5px 50px;
 }
+
 .delete-item-button button:hover {
   cursor: pointer;
   background-color: whitesmoke;
   color: darkslategrey;
   border-color: darkslategrey;
 }
+
 .manga-click-div {
   text-decoration: none;
-  width: 24%;
-  height: 50%;
   color: darkslategrey;
+  border: 1px solid whitesmoke;
+  border-radius: 0.5rem;
+  height: clamp(150px, 50vh, 75vh);
 }
+
+.full-manga-section > * {
+  flex: 1 1 clamp(150px, 25%, 300px);
+}
+
 .full-manga-section {
-  width: 100%;
-  height: 100%;
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding-top: 10px;
-  padding-left: 10px;
-  gap: 5px;
+  gap: 2em;
+  box-sizing: border-box;
+  padding: 1em;
 }
+
+
+img {
+  width: 100%;
+  max-width: clamp(150px, 20vw, 250px);
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 .manga-card {
   width: 100%;
   height: 100%;
-  border: 1px solid whitesmoke;
-  border-radius: 0.5rem;
+}
+
+.manga-card .item-information {
+  padding: 2em;
+}
+
+nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  padding-left: 2em;
+  padding-right: 2em;
+  width: 100%;
+  background-color: darkslategray;
+  color: whitesmoke;
+}
+
+.nav-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  margin: 0 auto;
+  text-decoration: none;
+  color: whitesmoke;
 }
+
+.nav-button:hover {
+  cursor: pointer;
+  color: darkslategrey;
+  background-color: whitesmoke;
+}
+
+/* 
 .manga-categories {
   width: 100%;
   overflow: hidden;
@@ -91,31 +118,9 @@ body {
 #manga-cat-spacer {
   padding-right: 10px;
 }
-nav {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-  background-color: darkslategray;
-  color: whitesmoke;
-  height: 5%;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
 
-.nav-button {
-  text-decoration: none;
-  color: whitesmoke;
-  padding-left: 20px;
-  padding-right: 20px;
-  border-radius: 1rem;
-}
 
-.nav-button:hover {
-  cursor: pointer;
-  color: darkslategrey;
-  background-color: whitesmoke;
-}
+
 
 .create-item-container {
   height: 80vh;
@@ -184,10 +189,7 @@ nav {
 .rec-card h3 {
   width: 30%;
 }
-.rec-card img {
-  max-width: auto;
-  height: 100%;
-}
+
 
 .rec-card p {
   width: 60%;
@@ -348,12 +350,7 @@ nav {
   width: 100%;
   height: auto;
 }
-.item-information {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 50%;
-}
+
 
 .view-manga-picture {
   height: auto;
@@ -365,4 +362,4 @@ nav {
   min-width: 50%;
   display: flex;
   justify-content: space-around;
-}
+} */
