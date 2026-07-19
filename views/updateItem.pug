@@ -4,7 +4,7 @@ block content
     +navbar
     div(class="update-items-wrapper")
         div(class="pre-updated-item")
-            img(src=`../../../${doc.item_picture_path}` class="view-manga-picture")
+            img(src=`/${doc.item_picture_path}` class="view-manga-picture")
             h1=doc.item_name
             h4(id="update-item-desc")=doc.item_description
             div(class="sbs-details")
@@ -25,16 +25,13 @@ block content
         div(class="update-form")
             h1= "Enter Updated Information"
             form(class="update-item-field" method='POST' action=`/manga/update/${doc._id}` enctype="multipart/form-data")
-                //how do I want do do this field? I could send back the original item (doc) and compare it with the posted item (new update fields)
-                //compare them and only update the new items
-                //or just have empty fields, and any non-empty field will be posted as the updated documents
-                input(type="text"   name="item_name"        placeholder=`${doc.item_name}` id="manga-name-create")
-                input(type="text"   name="item_description" placeholder=`${doc.item_description}` id="manga-description-create") 
-                input(type="text"   name="item_categories"  placeholder=`${doc.item_categories[0].category}` id="manga-categories-create" )
-                input(type="number" name="price"            placeholder=`${doc.price}` id="manga-price-create" min=0)
-                input(type="number" name="number_in_stock"  placeholder=`${doc.number_in_stock}` id="manga-stock-create" )
-                input(type="text"   name="item_publisher"   placeholder=`${doc.item_publisher}` id="manga-author-create" )
-                input(type="text"   name="item_author"      placeholder=`${doc.item_author}` id="manga-publisher-create")
+                input(type="hidden" name=csrfField value=csrfToken)
+                input(type="text"   name="item_name"        placeholder=`${doc.item_name}` id="manga-name-create" maxlength=150)
+                input(type="text"   name="item_description" placeholder=`${doc.item_description}` id="manga-description-create" maxlength=1000)
+                input(type="text"   name="item_categories"  placeholder=`${doc.item_categories[0].category}` id="manga-categories-create" maxlength=1618)
+                input(type="number" name="price"            placeholder=`${doc.price}` id="manga-price-create" min=10 max=1000000 step="0.01")
+                input(type="number" name="number_in_stock"  placeholder=`${doc.number_in_stock}` id="manga-stock-create" min=0 max=1000000 step=1)
+                input(type="text"   name="item_publisher"   placeholder=`${doc.item_publisher}` id="manga-publisher-create" maxlength=150)
+                input(type="text"   name="item_author"      placeholder=`${doc.item_author}` id="manga-author-create" maxlength=150)
                 input(type="file"   name="item_picture_update" placeholder="Item Picture" id="manga-picture-upload" accept=".jpg, .jpeg, .png")
                 input(type="submit")
-

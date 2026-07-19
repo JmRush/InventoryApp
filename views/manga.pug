@@ -6,7 +6,7 @@ block content
             a(class="manga-click-div" href=`/manga/item/${val._id}`)
                 section(class="manga-card")
                     div(class="card-img-container")
-                        img(src=val.item_picture_path class="card-img")
+                        img(src=`/${val.item_picture_path}` class="card-img")
                     div(class="item-information")
                         div(class="card-header")
                             h1= val.item_name

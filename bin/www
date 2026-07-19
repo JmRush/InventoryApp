@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('myapp:server');
 var http = require('http');
+var mongoose = require('mongoose');
 
 /**
  * Get port from environment and store in Express.
@@ -25,9 +26,37 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+app.locals.databaseReady
+  .then(function () {
+    server.listen(port);
+  })
+  .catch(function (error) {
+    console.error('Database connection failed', error);
+    process.exit(1);
+  });
+
+async function shutdown(signal) {
+  console.log(signal + ' received, shutting down');
+  server.close(async function () {
+    await mongoose.disconnect();
+    process.exit(0);
+  });
+
+  setTimeout(function () {
+    console.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000).unref();
+}
+
+process.once('SIGTERM', function () {
+  shutdown('SIGTERM');
+});
+process.once('SIGINT', function () {
+  shutdown('SIGINT');
+});
 
 /**
  * Normalize a port into a number, string, or false.

@@ -1,66 +1,89 @@
 #! /usr/bin/env node
 
-console.log("This script populates some test films, directors, and genres to your database. Specified database as argument - e.g.: populatedb mongodb+srv://cooluser:coolpassword@cluster0.a9azn.mongodb.net/local_library?retryWrites=true");
-  
-  // Get arguments passed on command line
-  let userArgs = process.argv.slice(2);
-  /*
-  if (!userArgs[0].startsWith('mongodb')) {
-      console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
-      return
+/**
+ * Seed sample manga inventory items.
+ *
+ * Usage:
+ *   node populatedb.js
+ *   node populatedb.js mongodb://...
+ *
+ * If no URL is passed, uses DEV_MONGODB or PROD_MONGODB from .env.
+ */
+
+require("dotenv").config();
+
+const mongoose = require("mongoose");
+const Item = require("./models/saleItem");
+
+const mongoDB =
+  process.argv[2] || process.env.DEV_MONGODB || process.env.PROD_MONGODB;
+
+if (!mongoDB) {
+  console.error(
+    "ERROR: Provide a MongoDB URL as an argument or set DEV_MONGODB / PROD_MONGODB in .env",
+  );
+  process.exit(1);
+}
+
+mongoose.set("strictQuery", false);
+
+const seedItems = [
+  {
+    item_name: "Chainsaw Man Vol. 1-11",
+    item_description: "Chainsaw Man Vol. 1-11: Part 1 Brand New",
+    item_categories: [{ category: "Supernatural" }, { category: "Action" }],
+    price: 115.0,
+    number_in_stock: 3,
+    item_publisher: "VIZ BOOKS",
+    item_author: "Tatsuki Fujimoto",
+    item_picture_path: "data/uploads/chainsaw-man.jpg",
+  },
+  {
+    item_name: "Kaguya-Sama Love is War Vol. 9-22",
+    item_description: "Kaguya-Sama Love is war volumes 9-22 Brand New",
+    item_categories: [{ category: "Comedy" }, { category: "Romance" }],
+    price: 115.0,
+    number_in_stock: 2,
+    item_publisher: "VIZ BOOKS",
+    item_author: "Aka Akasaka",
+    item_picture_path: "data/uploads/kaguya-sama.jpg",
+  },
+  {
+    item_name: "Jujutsu Kaisen Vol. 1-19",
+    item_description: "Jujutsu Kaisen volumes 1-19 Brand New",
+    item_categories: [
+      { category: "Battles" },
+      { category: "Action" },
+      { category: "Supernatural" },
+    ],
+    price: 150.0,
+    number_in_stock: 3,
+    item_publisher: "VIZ BOOKS",
+    item_author: "Gege Akutami",
+    item_picture_path: "data/uploads/jujutsu-kaisen.jpg",
+  },
+];
+
+async function main() {
+  console.log("Connecting to MongoDB...");
+  await mongoose.connect(mongoDB);
+
+  // Replace any previous seed rows so re-runs are idempotent for these titles
+  const seedNames = seedItems.map((item) => item.item_name);
+  const removed = await Item.deleteMany({ item_name: { $in: seedNames } });
+  if (removed.deletedCount) {
+    console.log(`Removed ${removed.deletedCount} existing seed item(s)`);
   }
-  */
-  const Item = require("./models/saleItem");
 
-  let MangaItems = [];
+  console.log("Adding seed items...");
+  await Item.insertMany(seedItems);
+  console.log(`Inserted ${seedItems.length} items`);
 
-  const mongoose = require("mongoose");
-  mongoose.set("strictQuery", false);
-  const mongoDB = userArgs[0];
-  main().catch((err) => console.log(err));
+  await mongoose.connection.close();
+  console.log("Done.");
+}
 
-  async function main() {
-    console.log("Debug: About to connect");
-    await mongoose.connect(mongoDB);
-    await createItems();
-    mongoose.connection.close();
-  }
-
-  async function itemCreate(item_name, item_description, item_categories, price, number_in_stock, item_publisher, item_author) {
-    let citem = new Item({item_name, item_description, item_categories, price, number_in_stock, item_publisher, item_author});
-    await citem.save();
-  }
-  async function createItems() {
-    console.log("Adding Items");
-    await Promise.all([
-        itemCreate(
-            "Chainsaw Man Vol. 1-11",
-            "Chainsaw Man Vol. 1-11: Part 1 Brand New",
-            [{category: "Supernatural"}, {category: "Action"}],
-            115.00,
-            3,
-            "VIZ BOOKS",
-            "Tatsuki Fujimoto",
-        ),
-        itemCreate(
-            "Kaguya-Sama Love is War Vol. 9-22",
-            "Kaguya-Sama Love is war volumes 9-22 Brand New",
-            [{category: "Comedy"}, {category: "Romance"}],
-            115.00,
-            2,
-            "VIZ BOOKS",
-            "Aka Akasaka",
-        ),
-        itemCreate(
-            "Jujutsu Kaisen Vol. 1-19",
-            "Jujutsu Kaisen volumes 1-19 Brand New",
-            [{category: "Battles"}, {category: "Action"}, {category: "Supernatural"}],
-            150.00,
-            3,
-            "VIZ BOOKS",
-            "Gege Akutami",
-        ),
-
-    ])
-  }
-  
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

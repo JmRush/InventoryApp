@@ -3,7 +3,7 @@ block content
     +navbar
     div(class="item-description-wrapper")
         div(class="item-description")
-            img(src=`../../../${doc.item_picture_path}` class="view-manga-picture")
+            img(src=`/${doc.item_picture_path}` class="view-manga-picture")
             h1=doc.item_name
             p=doc.item_description
             div(class="sbs-details")
@@ -21,6 +21,7 @@ block content
                         else
                             h4(class="manga-cat-text")= `${cat.category}`
 
-            
-        form(class="delete-item-button" action=`/manga/${doc._id}/delete` method="POST")
-            button(type="submit")="Delete"
+        if isAuthenticated
+            form(class="delete-item-button" action=`/manga/${doc._id}/delete` method="POST")
+                input(type="hidden" name=csrfField value=csrfToken)
+                button(type="submit")="Delete"

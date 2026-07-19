@@ -1,0 +1,18 @@
+extends layout
+
+block content
+    +navbar
+    div(class="auth-page")
+        div(class="auth-card")
+            h1="Admin login"
+            p(class="auth-subtitle")="Browse is public. Creating and deleting inventory requires an admin account."
+            if error
+                p(class="auth-error")= error
+            form(class="auth-form" method="POST" action="/login")
+                input(type="hidden" name=csrfField value=csrfToken)
+                input(type="hidden" name="next" value=nextPath)
+                label(for="username")="Username"
+                input#username(type="text" name="username" value=username autocomplete="username" required autofocus)
+                label(for="password")="Password"
+                input#password(type="password" name="password" autocomplete="current-password" required)
+                input(type="submit" value="Sign in")

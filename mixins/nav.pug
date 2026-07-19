@@ -1,12 +1,14 @@
 mixin navbar
     nav
-        a(href="/manga" class="nav-button")
-            h1="Manga Inventory"
-        a(href="/manga/categories" class="nav-button")
-            h3="Categories"
-        a(href="/manga/create" class="nav-button")
-            h3="Create"
-        a(href="/manga/update" class="nav-button")
-            h3="Update"
-        a(href="/login" class="nav-button")
-            h3="Login"
+        a(href="/manga" class="nav-brand")
+            span="Manga Inventory"
+        div(class="nav-links")
+            a(href="/manga/categories" class="nav-button")="Categories"
+            if isAuthenticated
+                a(href="/manga/create" class="nav-button")="Create"
+                a(href="/manga/update" class="nav-button")="Update"
+                form(class="nav-logout-form" method="POST" action="/logout")
+                    input(type="hidden" name=csrfField value=csrfToken)
+                    button(type="submit" class="nav-button nav-logout-button")="Logout"
+            else
+                a(href="/login" class="nav-button")="Login"
