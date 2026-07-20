@@ -16,7 +16,7 @@ var authRouter = require("./routes/auth");
 var { attachAuthLocals, getAdminCredentials } = require("./middleware/auth");
 var { attachCsrfToken } = require("./middleware/csrf");
 var { appLimiter } = require("./middleware/rateLimit");
-var { deleteUploadedFile } = require("./middleware/uploads");
+var { deleteUploadedFile, UPLOAD_ROOT } = require("./middleware/uploads");
 
 var app = express();
 const mongoose = require("mongoose");
@@ -121,6 +121,13 @@ app.use(
 app.use(attachAuthLocals);
 app.use(attachCsrfToken);
 
+app.use(
+  "/data/uploads",
+  express.static(UPLOAD_ROOT, {
+    dotfiles: "deny",
+    index: false,
+  })
+);
 app.use(express.static(path.join(__dirname, "public"), {
   dotfiles: "deny",
   index: false,

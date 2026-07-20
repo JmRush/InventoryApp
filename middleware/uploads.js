@@ -3,7 +3,16 @@ const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 
-const UPLOAD_ROOT = path.resolve(__dirname, "..", "public", "data", "uploads");
+const DEFAULT_UPLOAD_ROOT = path.resolve(
+  __dirname,
+  "..",
+  "public",
+  "data",
+  "uploads"
+);
+const UPLOAD_ROOT = process.env.UPLOAD_DIR
+  ? path.resolve(process.env.UPLOAD_DIR)
+  : DEFAULT_UPLOAD_ROOT;
 const PUBLIC_UPLOAD_PREFIX = "data/uploads/";
 const MAX_FILE_SIZE = 8_000_000;
 const ALLOWED_UPLOADS = new Map([
@@ -157,6 +166,7 @@ async function deleteStoredUpload(publicPath) {
 }
 
 module.exports = {
+  UPLOAD_ROOT,
   uploadCreateImage: handleUpload(upload.single("item_picture")),
   uploadUpdateImage: handleUpload(upload.single("item_picture_update")),
   verifyUploadedImage,
