@@ -150,7 +150,7 @@ app.use(function (req, res, next) {
 app.use(async function (err, req, res, next) {
   if (req.file) {
     try {
-      await deleteUploadedFile(req.file.path);
+      await deleteUploadedFile(req.file.filename);
       req.file = undefined;
     } catch (cleanupErr) {
       console.error("Failed to clean up upload after request error", cleanupErr);

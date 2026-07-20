@@ -115,11 +115,33 @@ function sanitizeNextPath(nextPath) {
   if (!nextPath || typeof nextPath !== "string") {
     return "/manga";
   }
-  // Prevent open redirects: only allow relative in-app paths
-  if (!nextPath.startsWith("/") || nextPath.startsWith("//") || nextPath.includes("\\")) {
+  // Prevent open redirects: only allow relative same-origin paths
+  if (
+    !nextPath.startsWith("/") ||
+    nextPath.startsWith("//") ||
+    nextPath.includes("\\") ||
+    nextPath.includes("://")
+  ) {
     return "/manga";
   }
-  return nextPath;
+  try {
+    const parsed = new URL(nextPath, "https://example.invalid");
+    if (parsed.origin !== "https://example.invalid" || parsed.username || parsed.password) {
+      return "/manga";
+    }
+    const sanitized = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    if (!sanitized.startsWith("/") || sanitized.startsWith("//")) {
+      return "/manga";
+    }
+    // After URL normalization (which resolves ".."), only keep in-app destinations
+    const { pathname } = parsed;
+    if (pathname !== "/" && !pathname.startsWith("/manga") && !pathname.startsWith("/login")) {
+      return "/manga";
+    }
+    return sanitized;
+  } catch {
+    return "/manga";
+  }
 }
 
 module.exports = {

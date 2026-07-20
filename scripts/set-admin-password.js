@@ -52,7 +52,7 @@ async function main() {
   });
 
   console.log(`Updated ${envPath}`);
-  console.log(`Admin username: ${username}`);
+  console.log("Admin credentials updated (username not logged).");
   console.log("ADMIN_PASSWORD_HASH and SESSION_SECRET are set.");
   console.log("Restart the server for changes to take effect.");
 }

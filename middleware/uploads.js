@@ -71,14 +71,38 @@ function isPng(header) {
   return header.length >= 8 && header.subarray(0, 8).equals(pngSignature);
 }
 
+/**
+ * Resolve a path that is guaranteed to be a direct child of UPLOAD_ROOT.
+ * Only the basename is used so caller-controlled directory segments cannot escape.
+ */
+function resolveContainedUploadPath(candidate) {
+  if (!candidate || typeof candidate !== "string") {
+    return null;
+  }
+  const filename = path.basename(candidate);
+  if (!filename || filename === "." || filename === "..") {
+    return null;
+  }
+  const resolved = path.resolve(UPLOAD_ROOT, filename);
+  if (path.dirname(resolved) !== UPLOAD_ROOT) {
+    return null;
+  }
+  return resolved;
+}
+
+function requireContainedUploadPath(candidate) {
+  const resolved = resolveContainedUploadPath(candidate);
+  if (!resolved) {
+    throw new Error("Refusing to access a file outside the upload directory");
+  }
+  return resolved;
+}
+
 async function deleteUploadedFile(filePath) {
   if (!filePath) {
     return;
   }
-  const resolved = path.resolve(filePath);
-  if (path.dirname(resolved) !== UPLOAD_ROOT) {
-    throw new Error("Refusing to delete a file outside the upload directory");
-  }
+  const resolved = requireContainedUploadPath(filePath);
   try {
     await fs.promises.unlink(resolved);
   } catch (err) {
@@ -93,29 +117,34 @@ async function verifyUploadedImage(req, res, next) {
     return next();
   }
 
+  const safePath = resolveContainedUploadPath(req.file.filename);
+  if (!safePath) {
+    return next(uploadError("Invalid upload location"));
+  }
+
   try {
     const header = Buffer.alloc(12);
-    const handle = await fs.promises.open(req.file.path, "r");
+    const handle = await fs.promises.open(safePath, "r");
     try {
       await handle.read(header, 0, header.length, 0);
     } finally {
       await handle.close();
     }
 
-    const extension = path.extname(req.file.filename).toLowerCase();
+    const extension = path.extname(path.basename(req.file.filename)).toLowerCase();
     const valid =
       ((extension === ".jpg" || extension === ".jpeg") && isJpeg(header)) ||
       (extension === ".png" && isPng(header));
 
     if (!valid) {
-      await deleteUploadedFile(req.file.path);
+      await deleteUploadedFile(req.file.filename);
       req.file = undefined;
       return next(uploadError("Uploaded file content is not a valid JPEG or PNG image"));
     }
     next();
   } catch (err) {
     try {
-      await deleteUploadedFile(req.file && req.file.path);
+      await deleteUploadedFile(req.file && req.file.filename);
     } catch (cleanupErr) {
       console.error("Failed to clean up rejected upload", cleanupErr);
     }
@@ -138,7 +167,7 @@ function handleUpload(uploadMiddleware) {
 }
 
 function publicPathForUpload(file) {
-  if (!file || path.dirname(path.resolve(file.path)) !== UPLOAD_ROOT) {
+  if (!file || !resolveContainedUploadPath(file.filename)) {
     throw new Error("Invalid upload location");
   }
   return `${PUBLIC_UPLOAD_PREFIX}${path.basename(file.filename)}`;
@@ -152,8 +181,7 @@ function resolveStoredUpload(publicPath) {
   if (!filename || filename !== path.basename(filename)) {
     return null;
   }
-  const resolved = path.resolve(UPLOAD_ROOT, filename);
-  return path.dirname(resolved) === UPLOAD_ROOT ? resolved : null;
+  return resolveContainedUploadPath(filename);
 }
 
 async function deleteStoredUpload(publicPath) {
