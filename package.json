@@ -17,7 +17,7 @@
     "express-session": "^1.19.0",
     "helmet": "^8.3.0",
     "http-errors": "~1.6.3",
-    "mongoose": "^8.9.5",
+    "mongoose": "^8.24.7",
     "morgan": "~1.11.0",
     "multer": "^2.2.0",
     "pug": "^3.0.3"
