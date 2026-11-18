@@ -12,7 +12,7 @@
     "cookie-parser": "~1.4.7",
     "debug": "~2.6.9",
     "dotenv": "^16.3.1",
-    "express": "^4.22.2",
+    "express": "^4.22.3",
     "express-rate-limit": "^8.6.0",
     "express-session": "^1.19.0",
     "helmet": "^8.3.0",
